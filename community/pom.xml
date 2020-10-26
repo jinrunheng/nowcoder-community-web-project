@@ -65,6 +65,17 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            <!--Flyway database migration-->
+            <plugin>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-maven-plugin</artifactId>
+                <version>6.2.4</version>
+                <configuration>
+                    <user>root</user>
+                    <password>123456</password>
+                    <url>jdbc:mysql://localhost:3306/community?useSSL=false&amp;allowPublicKeyRetrieval=true</url>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
