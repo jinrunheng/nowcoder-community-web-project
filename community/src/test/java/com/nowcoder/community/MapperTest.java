@@ -1,6 +1,8 @@
 package com.nowcoder.community;
 
+import com.nowcoder.community.dao.DiscussPostMapper;
 import com.nowcoder.community.dao.UserMapper;
+import com.nowcoder.community.entity.DiscussPost;
 import com.nowcoder.community.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
@@ -10,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.util.Date;
+import java.util.List;
 
 @SpringBootTest
 @ContextConfiguration(classes = CommunityApplication.class)
@@ -18,6 +21,9 @@ public class MapperTest {
 
     @Autowired
     private UserMapper userMapper;
+
+    @Autowired
+    private DiscussPostMapper discussPostMapper;
 
     @Test
     public void testSelectUser() {
@@ -64,5 +70,19 @@ public class MapperTest {
         Assertions.assertEquals(updatedUser.getHeaderUrl(), "http://www.nowcoder.com/102.png");
 
         userMapper.deleteUser("test");
+    }
+
+    @Test
+    public void testSelectPosts() {
+        List<DiscussPost> posts = discussPostMapper.selectDiscussPosts(0, 0, 10);
+        for (DiscussPost post : posts) {
+            System.out.println(post);
+        }
+        Assertions.assertEquals(posts.size(), 10);
+        List<DiscussPost> posts1 = discussPostMapper.selectDiscussPosts(149, 0, 10);
+        for (DiscussPost post : posts1) {
+            System.out.println(post);
+        }
+        Assertions.assertEquals(discussPostMapper.selectDiscussPostRows(149), posts1.size());
     }
 }

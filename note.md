@@ -177,7 +177,7 @@ HTTP：Hyper Text Transfer Protocol
 - 常用语法
   - 标准表达式，判断与循环，模版的布局
 
-## MyBatis入门
+## 四：MyBatis入门
 
 #### MyBatis
 
@@ -190,5 +190,15 @@ HTTP：Hyper Text Transfer Protocol
 - 示例
   - 使用MyBatis对用户表进行CRUD操作
 
+## 五：开发社区首页
 
+#### 开发社区首页
 
+- 一次请求的执行过程：request->Controller->Service->DAO->DB
+
+- 分步实现
+
+  - 开发社区首页，显示前10个帖子
+  - 开发分页组件，分页显示所有的帖子
+
+  
