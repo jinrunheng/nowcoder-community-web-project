@@ -192,8 +192,6 @@ HTTP：Hyper Text Transfer Protocol
 
 ## 五：开发社区首页
 
-#### 开发社区首页
-
 - 一次请求的执行过程：request->Controller->Service->DAO->DB
 
 - 分步实现
@@ -201,4 +199,129 @@ HTTP：Hyper Text Transfer Protocol
   - 开发社区首页，显示前10个帖子
   - 开发分页组件，分页显示所有的帖子
 
-  
+
+## 六：项目调试
+
+- 响应状态码
+
+- 服务端断点调试
+
+- 客户端断点调试
+
+- 设置日志级别，将日志输出到不同的终端
+
+  - logback
+
+    ```java
+    package org.slf4j;
+    public interface Logger {
+      // Printing methods
+      public void trace(String message);
+      public void debug(String message);
+      public void info(String message);
+      public void warn(String message);
+      public void error(String message);
+    }
+    ```
+
+    
+
+  - logback-spring.xml
+
+    ```xml
+    <?xml version="1.0" encoding="UTF-8"?>
+    <configuration>
+        <contextName>community</contextName>
+        <property name="LOG_PATH" value="/Users/macbook/Desktop/myProject/log"/>
+        <property name="APPDIR" value="community"/>
+    
+        <!-- error file -->
+        <appender name="FILE_ERROR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_PATH}/${APPDIR}/log_error.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/${APPDIR}/error/log-error-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                    <maxFileSize>5MB</maxFileSize>
+                </timeBasedFileNamingAndTriggeringPolicy>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+            <append>true</append>
+            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                <pattern>%d %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+                <charset>utf-8</charset>
+            </encoder>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>error</level>
+                <onMatch>ACCEPT</onMatch>
+                <onMismatch>DENY</onMismatch>
+            </filter>
+        </appender>
+    
+        <!-- warn file -->
+        <appender name="FILE_WARN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_PATH}/${APPDIR}/log_warn.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/${APPDIR}/warn/log-warn-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                    <maxFileSize>5MB</maxFileSize>
+                </timeBasedFileNamingAndTriggeringPolicy>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+            <append>true</append>
+            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                <pattern>%d %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+                <charset>utf-8</charset>
+            </encoder>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>warn</level>
+                <onMatch>ACCEPT</onMatch>
+                <onMismatch>DENY</onMismatch>
+            </filter>
+        </appender>
+    
+        <!-- info file -->
+        <appender name="FILE_INFO" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_PATH}/${APPDIR}/log_info.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                <fileNamePattern>${LOG_PATH}/${APPDIR}/info/log-info-%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                    <maxFileSize>5MB</maxFileSize>
+                </timeBasedFileNamingAndTriggeringPolicy>
+                <maxHistory>30</maxHistory>
+            </rollingPolicy>
+            <append>true</append>
+            <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                <pattern>%d %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+                <charset>utf-8</charset>
+            </encoder>
+            <filter class="ch.qos.logback.classic.filter.LevelFilter">
+                <level>info</level>
+                <onMatch>ACCEPT</onMatch>
+                <onMismatch>DENY</onMismatch>
+            </filter>
+        </appender>
+    
+        <!-- console -->
+        <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%d %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
+                <charset>utf-8</charset>
+            </encoder>
+            <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+                <level>debug</level>
+            </filter>
+        </appender>
+    
+        <logger name="com.nowcoder.community" level="debug"/>
+    
+        <root level="info">
+            <appender-ref ref="FILE_ERROR"/>
+            <appender-ref ref="FILE_WARN"/>
+            <appender-ref ref="FILE_INFO"/>
+            <appender-ref ref="STDOUT"/>
+        </root>
+    
+    </configuration>
+    ```
+
+    
