@@ -324,4 +324,48 @@ HTTP：Hyper Text Transfer Protocol
     </configuration>
     ```
 
+    ## 七：版本控制
+
+    - Git
+
+      - Git
+      - Git的安装与配置
+
+    - Git常用命令
+
+      - 将代码提交至本地仓库
+      - 将代码上传至远程仓库
+
+    - IDEA集成Git
+
+      - 在IDEA中配置并使用Git
+
+    - Git相关配置与命令
+
+      ```
+      ## 账号配置
+      git config --list
+      git config --global user.name "jinurnheng"
+      git config --global user.email "jinrunheng@foxmail.com"
+      
+      ## 本地仓库
+      git init
+      git status -s
+      git add *
+      git commit -m "commit message"
+      
+      ## 生成密钥
+      ssh -keygen -t rsa -C "jinrunheng@foxmail.com"
+      
+      ## 推送已有项目
+      git remote add origin https://git.***
+      
+      git push -u origin master
+      
+      ## 克隆已有仓库
+      git clone https://git.*** 
+      ```
+
+      
+
     
