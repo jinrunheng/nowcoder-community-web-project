@@ -1,14 +1,14 @@
 package com.nowcoder.community.entity;
 
-import lombok.Builder;
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 
 import java.util.Date;
 
 @Data
 @ToString
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DiscussPost {
     private int id;
     private int userId;

@@ -158,4 +158,64 @@
     }
     ```
 
-    
+
+
+
+## 二：注册部分
+
+#### 注册流程
+
+- 访问注册页面
+  - 点击顶部区域内的链接，打开注册页面
+- 提交注册数据
+  - 通过表单提交数据
+  - 服务端验证账号是否已经存在，邮箱是否已经注册
+  - 服务端发送激活邮件
+- 激活注册账号
+  - 点击邮件中的链接，访问服务端的激活服务
+
+##### 1. 访问注册页面
+
+Controller
+
+```java
+package com.nowcoder.community.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+@Controller
+public class LoginController {
+
+    @RequestMapping(path = "/register", method = RequestMethod.GET)
+    public String getRegisterPage() {
+        return "/site/register";
+    }
+}
+```
+
+首页中注册部分的链接
+
+```html
+<li class="nav-item ml-3 btn-group-vertical">
+    <a class="nav-link" th:href="@{/register}">注册</a>
+</li>
+```
+
+thymeleaf组件的复用
+
+index.html
+
+```html
+<header class="bg-dark sticky-top" th:fragment="header">
+```
+
+register.html
+
+```html
+<header class="bg-dark sticky-top" th:replace="index::header">
+```
+
+
+
