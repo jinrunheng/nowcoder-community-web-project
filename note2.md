@@ -174,48 +174,67 @@
 - 激活注册账号
   - 点击邮件中的链接，访问服务端的激活服务
 
-##### 1. 访问注册页面
+## 三：会话管理
 
-Controller
+- HTTP的基本性质
 
-```java
-package com.nowcoder.community.controller;
+  - HTTP是简单的
+  - HTTP是可扩展的
+  - HTTP是无状态的，有会话的；HTTP本质是无状态的，使用Cookies可以创建有状态的会话
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+- Cookie
 
-@Controller
-public class LoginController {
+  - Cookie是服务器发送到浏览器，并保存在浏览器端端一小块数据
+  - 浏览器下次访问该服务器端时候，会自动携带该小块数据，将其发送给服务器
 
-    @RequestMapping(path = "/register", method = RequestMethod.GET)
-    public String getRegisterPage() {
-        return "/site/register";
-    }
-}
-```
+- Session
 
-首页中注册部分的链接
+  - Session是JavaEE端标准，用于在服务端记录客户端的信息
+  - 数据存放在服务端更加安全，但是也会增加服务端的内存压力
 
-```html
-<li class="nav-item ml-3 btn-group-vertical">
-    <a class="nav-link" th:href="@{/register}">注册</a>
-</li>
-```
+- Session在分布式部署中有什么缺点？或者说为什么在分布式应用中，我们一般都会使用Cookie而不使用Session
 
-thymeleaf组件的复用
+  分布式应用中，我们会使用多台服务器同时为客户提供服务，在多台服务器前，我们会使用一个层来进行浏览器请求的分发，这个层一般都是负载均衡的服务器例如nginx；负载均衡的策略一般是看哪一台服务器比较“闲”。
 
-index.html
+  例如：
 
-```html
-<header class="bg-dark sticky-top" th:fragment="header">
-```
+  小张的浏览器发送的请求，被nginx分发到了服务器A，因为此时服务器A比较闲，这时候，在服务器A就会生成一个Session，并在响应头中发送给小张的浏览器一个Cookie，Cookie中存储sessionId；那么试想，当小张的浏览器过一段时间又向服务端发送一个请求，这时候服务器A处于busy的状态，所以nginx将小张的请求分发给了服务器B，这时候，服务器B并没有小张的Session信息，问题就暴露出来了。
 
-register.html
+  那么是否有解决方法呢？
 
-```html
-<header class="bg-dark sticky-top" th:replace="index::header">
-```
+  1. 粘性Session
+
+     设置负载均衡的处理策略，小张发送的请求就一直由于服务器A来处理；不过这也是有一定问题的，这样我们就无法保证nginx的分发策略一定是负载均衡的
+
+  2. 同步Session
+
+     小张浏览器的请求被服务器A处理之后，在服务器A内部创建了Session，同步Session的思路就是，将服务器A内部存储的Session信息同步到其他的服务器上，就相当于含有小张信息的Session被复制了多份给所有的服务器；但是这样暴露出来的问题就更加明显了：首先是造成了不必要的内存上的浪费，其次就是服务器和服务器之间产生了耦合。
+
+  3. 共享Session
+
+     共享Session的思路是：使用一台新的服务器，这台服务器不是用来处理业务的，而是存放所有服务器的共享信息。这样所有浏览器的请求产生的Session都存放在这台共享服务器上，等到浏览器访问服务器的时候，所有的服务器都向这台共享服务器上查看Session信息。这样看似完美，不过也是有一定的隐患，因为所有的Session信息都保存在这台服务器上，如果这台服务器挂掉了，所有的服务器都依赖于这台共享服务器，那么就丢失了所有的Session信息。
+
+     
+
+  所以，现在的主流策略就是，能用Cookie存储就用Cookie存储，而一些用户的敏感信息，就存放到数据库中。数据库可以做一些集群备份，不至于丢失信息。数据库的查询会造成压力，所以可以在数据库之前增加一个层，使用NoSql，例如redis。这种做法就是当前比较主流的做法，也比较成熟。
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
