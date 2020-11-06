@@ -222,118 +222,140 @@
 
 ## 四：验证码
 
-- kaptcha(https://code.google.com/archive/p/kaptcha)
+kaptcha(https://code.google.com/archive/p/kaptcha)
 
-  - 导入jar包
+- 导入jar包
 
-    ```xml
-    <dependency>
-        <groupId>com.github.penggle</groupId>
-        <artifactId>kaptcha</artifactId>
-        <version>2.3.2</version>
-    </dependency>
-    ```
+  ```xml
+  <dependency>
+      <groupId>com.github.penggle</groupId>
+      <artifactId>kaptcha</artifactId>
+      <version>2.3.2</version>
+  </dependency>
+  ```
 
-  - 编写kaptcha 配置类
+- 编写kaptcha 配置类
 
-    ```java
-    package com.nowcoder.community.config;
-    
-    import com.google.code.kaptcha.Producer;
-    import com.google.code.kaptcha.impl.DefaultKaptcha;
-    import com.google.code.kaptcha.util.Config;
-    import org.springframework.context.annotation.Bean;
-    import org.springframework.context.annotation.Configuration;
-    
-    import java.util.Properties;
-    
-    @Configuration
-    public class KaptchaConfig {
-    
-        @Bean
-        public Producer kaptchaProducer() {
-            Properties properties = new Properties();
-            properties.setProperty("kaptcha.image.width", "100");
-            properties.setProperty("kaptcha.image.height", "40");
-            properties.setProperty("kaptcha.textproducer.font.size", "32");
-            properties.setProperty("kaptcha.textproducer.font.color", "black");
-            properties.setProperty("kaptcha.textproducer.char.string", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
-            properties.setProperty("kaptcha.textproducer.char.length", "4");
-            properties.setProperty("kaptcha.noise.impl", "com.google.code.kaptcha.impl.NoNoise");
-    
-    
-            DefaultKaptcha kaptcha = new DefaultKaptcha();
-            Config config = new Config(properties);
-            kaptcha.setConfig(config);
-            return kaptcha;
-        }
-    }
-    
-    ```
+  ```java
+  package com.nowcoder.community.config;
+  
+  import com.google.code.kaptcha.Producer;
+  import com.google.code.kaptcha.impl.DefaultKaptcha;
+  import com.google.code.kaptcha.util.Config;
+  import org.springframework.context.annotation.Bean;
+  import org.springframework.context.annotation.Configuration;
+  
+  import java.util.Properties;
+  
+  @Configuration
+  public class KaptchaConfig {
+  
+      @Bean
+      public Producer kaptchaProducer() {
+          Properties properties = new Properties();
+          properties.setProperty("kaptcha.image.width", "100");
+          properties.setProperty("kaptcha.image.height", "40");
+          properties.setProperty("kaptcha.textproducer.font.size", "32");
+          properties.setProperty("kaptcha.textproducer.font.color", "black");
+          properties.setProperty("kaptcha.textproducer.char.string", "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+          properties.setProperty("kaptcha.textproducer.char.length", "4");
+          properties.setProperty("kaptcha.noise.impl", "com.google.code.kaptcha.impl.NoNoise");
+  
+  
+          DefaultKaptcha kaptcha = new DefaultKaptcha();
+          Config config = new Config(properties);
+          kaptcha.setConfig(config);
+          return kaptcha;
+      }
+  }
+  
+  ```
 
-  - 生成随机字符，生成图片
+- 生成随机字符，生成图片
 
-    ```java
-    		@RequestMapping(value = "/kaptcha", method = RequestMethod.GET)
-        public void getKaptcha(HttpServletResponse response, HttpSession session) {
-            // 生成验证码
-            String text = kaptchaProducer.createText();
-            BufferedImage image = kaptchaProducer.createImage(text);
-    
-            // 将验证码写入session中
-            session.setAttribute("kaptcha", text);
-            // 将图片输出给浏览器
-            response.setContentType("image/png");
-            try {
-                OutputStream outputStream = response.getOutputStream();
-                ImageIO.write(image, "png", outputStream);
-            } catch (IOException e) {
-                logger.error("响应验证码失败:" + e.getMessage());
-            }
-        }
-    ```
+  ```java
+  		@RequestMapping(value = "/kaptcha", method = RequestMethod.GET)
+      public void getKaptcha(HttpServletResponse response, HttpSession session) {
+          // 生成验证码
+          String text = kaptchaProducer.createText();
+          BufferedImage image = kaptchaProducer.createImage(text);
+  
+          // 将验证码写入session中
+          session.setAttribute("kaptcha", text);
+          // 将图片输出给浏览器
+          response.setContentType("image/png");
+          try {
+              OutputStream outputStream = response.getOutputStream();
+              ImageIO.write(image, "png", outputStream);
+          } catch (IOException e) {
+              logger.error("响应验证码失败:" + e.getMessage());
+          }
+      }
+  ```
 
-    
+  
 
-    在我们的login.html文件中
+  在我们的login.html文件中
 
-    ```html
-    <img th:src="@{/kaptcha}" id="kaptcha" style="width:100px;height:40px;" class="mr-2"/>
-    <a href="javascript:refresh_kaptha();" class="font-size-12 align-bottom">刷新验证码</a>
-    ```
+  ```html
+  <img th:src="@{/kaptcha}" id="kaptcha" style="width:100px;height:40px;" class="mr-2"/>
+  <a href="javascript:refresh_kaptha();" class="font-size-12 align-bottom">刷新验证码</a>
+  ```
 
-    JS刷新验证码的功能如下：
+  JS刷新验证码的功能如下：
 
-    ```html
-    <script>
-        function refresh_kaptha() {
-            var path = CONTEXT_PATH + "/kaptcha?p=" + Math.random()
-            $("#kaptcha").attr("src", path)
-        }
-    </script>
-    ```
+  ```html
+  <script>
+      function refresh_kaptha() {
+          var path = CONTEXT_PATH + "/kaptcha?p=" + Math.random()
+          $("#kaptcha").attr("src", path)
+      }
+  </script>
+  ```
 
-    
+  
 
-    
+## 五：开发登录与退出模块
 
-    
+- 访问登录页面
+  - 点击顶部区域内的链接，打开登录页面
+- 登录
+  - 验证账号，密码，验证码
+  - 成功时，生成登录凭证，发送给客户端
+  - 失败时，跳转回登录页
+- 退出
+  - 将登录凭证修改为失效的状态
+  - 跳转至网站首页
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
 
-    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

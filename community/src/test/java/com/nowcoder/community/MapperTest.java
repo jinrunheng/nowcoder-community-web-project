@@ -1,8 +1,10 @@
 package com.nowcoder.community;
 
 import com.nowcoder.community.dao.DiscussPostMapper;
+import com.nowcoder.community.dao.LoginTicketMapper;
 import com.nowcoder.community.dao.UserMapper;
 import com.nowcoder.community.entity.DiscussPost;
+import com.nowcoder.community.entity.LoginTicket;
 import com.nowcoder.community.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
@@ -24,6 +26,9 @@ public class MapperTest {
 
     @Autowired
     private DiscussPostMapper discussPostMapper;
+
+    @Autowired
+    private LoginTicketMapper loginTicketMapper;
 
     @Test
     public void testSelectUser() {
@@ -84,5 +89,24 @@ public class MapperTest {
             System.out.println(post);
         }
         Assertions.assertEquals(discussPostMapper.selectDiscussPostRows(149), posts1.size());
+    }
+
+    @Test
+    public void testLoginTicketCRUD() {
+        LoginTicket testTicket = LoginTicket.builder()
+                .userId(101)
+                .ticket("test")
+                .status(1)
+                .expired(new Date(System.currentTimeMillis() + 1000 * 60 * 10))
+                .build();
+        // test insert
+        Assertions.assertEquals(loginTicketMapper.insertLoginTicket(testTicket), 1);
+        // test select
+        Assertions.assertNotNull(loginTicketMapper.selectByTicket("test"));
+        // test update
+        Assertions.assertEquals(loginTicketMapper.updateStatus("test", 0), 1);
+        Assertions.assertEquals(loginTicketMapper.selectByTicket("test").getStatus(), 0);
+        // delete
+        Assertions.assertEquals(loginTicketMapper.deleteByTicket("test"), 1);
     }
 }
