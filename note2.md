@@ -335,6 +335,90 @@ kaptcha(https://code.google.com/archive/p/kaptcha)
 
 
 
+## 七：显示登录信息
+
+- 拦截器示例
+
+  - 定义拦截器，实现HandlerInterceptor
+
+    ```java
+    package com.nowcoder.community.controller.interceptor;
+    
+    import org.slf4j.Logger;
+    import org.slf4j.LoggerFactory;
+    import org.springframework.stereotype.Component;
+    import org.springframework.web.servlet.HandlerInterceptor;
+    import org.springframework.web.servlet.ModelAndView;
+    
+    import javax.servlet.http.HttpServletRequest;
+    import javax.servlet.http.HttpServletResponse;
+    
+    
+    @Component
+    public class AlphaInterceptor implements HandlerInterceptor {
+    
+    
+        private static final Logger logger = LoggerFactory.getLogger(AlphaInterceptor.class);
+    
+        // 在Controller之前执行
+        @Override
+        public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    
+            logger.debug("preHandle: " + handler.toString());
+            return true;
+        }
+    
+        // 在调用Controller之后执行
+        @Override
+        public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+            logger.debug("postHandle :" + handler.toString());
+        }
+    
+        // 在TemplateEngine之后执行
+        @Override
+        public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+            logger.debug("afterCompletion: " + handler.toString());
+        }
+    }
+    ```
+
+  - 配置拦截器，为它置顶拦截，排除的路径
+
+    ```java
+    package com.nowcoder.community.config;
+    
+    import com.nowcoder.community.controller.interceptor.AlphaInterceptor;
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.context.annotation.Configuration;
+    import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+    import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+    
+    @Configuration
+    public class WebMvcConfig implements WebMvcConfigurer {
+    
+        @Autowired
+        private AlphaInterceptor alphaInterceptor;
+    
+        @Override
+        public void addInterceptors(InterceptorRegistry registry) {
+            // excludePathPatterns 代表不需要拦截的资源 /** 代表所有的目录
+            // addPathPatterns 代表需要拦截的资源
+            registry.addInterceptor(alphaInterceptor)
+                    .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg")
+                    .addPathPatterns("/register", "/login");
+        }
+    }
+    ```
+
+- 拦截器应用
+
+  - 在请求开始时查询登录用户
+  - 在本次请求中持有用户数据
+  - 在模版视图上显示用户数据
+  - 在请求结束时清理用户数据
+
+在拦截器中选择存储用户的内存应该考虑到多线程的问题，使用ThreadLocal进行存储。
+
 
 
 
