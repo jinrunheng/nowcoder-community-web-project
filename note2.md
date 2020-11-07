@@ -419,6 +419,23 @@ kaptcha(https://code.google.com/archive/p/kaptcha)
 
 在拦截器中选择存储用户的内存应该考虑到多线程的问题，使用ThreadLocal进行存储。
 
+ThreadLocal采用线程隔离的方式存放数据，可以避免多线程之间出现数据访问的冲突；ThreadLocal提供set方法，能够以当前线程为key存放数据;ThreadLocal提供get方法，能够以当前线程为key获取数据；ThreadLocal提供remove方法，能够以当前线程为key删除数据。
+
+## 八：账号设置
+
+- 上传文件
+  - 请求：必须是POST请求
+  - 表单：`enctype="multipart/form-data"`
+  - Spring MVC：通过MultipartFile 处理上传文件
+- 开发步骤
+  - 访问账号设置页面
+  - 上传头像
+  - 获取头像
+
+## 九：修改密码
+
+
+
 
 
 
