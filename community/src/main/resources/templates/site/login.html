@@ -91,7 +91,7 @@
                                th:class="|form-control ${passwordMsg != null ? 'is-invalid' : ''}|"
                                id="password"
                                name="password"
-                               th:value="param.password"
+                               th:value="${param.password}"
                                placeholder="请输入您的密码!"
                                required>
                         <div class="invalid-feedback" th:text="${passwordMsg}">
@@ -124,7 +124,7 @@
                                name="rememberMe"
                                th:checked="${param.rememberMe}">
                         <label class="form-check-label" for="remember-me">记住我</label>
-                        <a href="forget.html" class="text-danger float-right">忘记密码?</a>
+                        <a th:href="@{/forget}" class="text-danger float-right">忘记密码?</a>
                     </div>
                 </div>
                 <div class="form-group row mt-4">
