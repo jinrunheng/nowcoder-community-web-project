@@ -216,4 +216,36 @@ public class UserService implements CommunityConstant {
     public int updateHeader(int userId, String headerUrl) {
         return userMapper.updateHeader(userId, headerUrl);
     }
+
+    // 更新用户密码
+    public Map<String, Object> updatePassword(int userId, String oldPassword, String newPassword, String confirmPassword) {
+        Map<String, Object> map = new HashMap<>();
+        // 原始密码输入不能为空
+        if (StringUtils.isBlank(oldPassword)) {
+            map.put("oldPasswordMsg", "原密码不能为空");
+            return map;
+        }
+        // 新密码输入不能为空
+        if (StringUtils.isBlank(newPassword)) {
+            map.put("newPasswordMsg", "新密码不能为空");
+            return map;
+        }
+        // 新密码和确认密码不同
+        if (!newPassword.equals(confirmPassword)) {
+            map.put("confirmPasswordMsg", "两次密码输入不一致");
+            return map;
+        }
+        User user = userMapper.selectById(userId);
+        oldPassword = CommunityUtil.md5(oldPassword + user.getSalt());
+        if (!user.getPassword().equals(oldPassword)) {
+            map.put("oldPasswordMsg", "原始密码输入有误");
+            return map;
+        }
+
+        // 更新密码
+        newPassword = CommunityUtil.md5(newPassword + user.getSalt());
+        userMapper.updatePassword(userId, newPassword);
+
+        return map;
+    }
 }
