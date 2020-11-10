@@ -1,5 +1,6 @@
 package com.nowcoder.community.util;
 
+import org.apache.commons.lang3.CharUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +50,54 @@ public class ImprovedSensitiveFilter {
         if (StringUtils.isBlank(text)) {
             return null;
         }
+
+        // 指针1 指向Trie
+        TrieNode node = trie.getRoot();
+        // 指针2
+        int begin = 0;
+        // 指针 3
+        int position = 0;
         StringBuilder sb = new StringBuilder();
-        return null;
+        while (begin < text.length()) {
+            if (position < text.length()) {
+                char c = text.charAt(position);
+
+                // 跳过符号
+                if (isSymbol(c)) {
+                    if (node == trie.getRoot()) {
+                        begin++;
+                        sb.append(c);
+                    }
+                    position++;
+                    continue;
+                }
+
+
+                node = node.subNodes.get(c);
+                if (node == null) {
+                    sb.append(text.charAt(begin));
+                    position = ++begin;
+                    node = trie.getRoot();
+                } else if (node.isEnd) {
+                    sb.append(REPLACEMENT);
+                    begin = ++position;
+                } else {
+                    position++;
+                }
+            } else {
+                sb.append(text.charAt(begin));
+                position = ++begin;
+                node = trie.getRoot();
+            }
+        }
+
+
+        return sb.toString();
     }
 
+    // 判断是否为符号
+    private boolean isSymbol(Character c) {
+        // 0x2E80~0x9FFF是东亚文字的范围(中文，韩文...)
+        return !CharUtils.isAsciiAlphanumeric(c) && (c < 0x2E80 || c > 0x9FFF);
+    }
 }
