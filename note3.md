@@ -440,7 +440,86 @@ xwa******ff
 - 设置已读
   - 访问私信详情时，将显示的私信设置为已读状态
 
-#### 九：
+#### 九：删除私信
+
+删除私信功能：即点击某条私信的删除按钮时，将其状态设置为删除态
+
+- Dao层
+
+  Dao层不需要添加删除方法，updateStatus可以修改消息的状态，当status为2时，代表删除
+
+  ```java
+  int updateStatus(List<Integer> ids, int status);
+  ```
+
+- Service层
+
+  删除消息
+
+  ```java
+  public int deleteMessage(int id) {
+      return messageMapper.updateStatus(Arrays.asList(new Integer[]{id}), 2);
+  }
+  ```
+
+- Controller层
+
+  删除私信
+
+  ```java
+  		@RequestMapping(path = "/letter/delete", method = RequestMethod.POST)
+      @ResponseBody
+      public String deleteLetter(int id) {
+          messageService.deleteMessage(id);
+          return CommunityUtil.getJSONString(0);
+      }
+  ```
+
+- 异步JS
+
+  ```javascript
+  function delete_msg() {
+      var btn = this
+      var id = $(btn).prev().val()
+  
+      // TODO 删除数据
+      $.post(
+          CONTEXT_PATH + "/letter/delete",
+          {"id": id},
+          function (data) {
+              data = $.parseJSON(data);
+              if (data.code == 0) {
+                  $(this).parents(".media").remove();
+                  location.reload(); // 用户删除掉一条私信消息，及时刷新页面，让用户看到结果
+              } else {
+                  alert(data.msg)
+              }
+          }
+      )
+  }
+  ```
+
+#### 十：统一处理异常
+
+- @ControllerAdvice
+  - 用于修饰类，表示该类是Controller的全局配置类
+  - 在此类中，可以对Controller进行如下三种全局配置：
+    - 异常处理方案
+    - 绑定数据方案
+    - 绑定参数方案
+- @ExceptionHandler
+  - 用于修饰方法，该方法会在Controller出现异常后被调用，用户处理捕获到的异常
+- @ModelAttribute
+  - 用于修饰方法，该方法会在Controller方法执行前被调用，用于为Model对象绑定参数
+
+- @DataBinder
+  - 用于修饰方法，该方法会在Controller方法执行前被调用，用于绑定参数的转换器
+
+#### 十一：统一记录日志
+
+
+
+
 
 
 

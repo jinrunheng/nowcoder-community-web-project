@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
 import org.unbescape.html.HtmlEscape;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -49,5 +50,10 @@ public class MessageService {
     // 将消息变成已读
     public int readMessage(List<Integer> ids) {
         return messageMapper.updateStatus(ids, 1);
+    }
+
+    // 删除消息
+    public int deleteMessage(int id) {
+        return messageMapper.updateStatus(Arrays.asList(new Integer[]{id}), 2);
     }
 }

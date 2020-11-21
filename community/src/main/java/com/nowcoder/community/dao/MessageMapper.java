@@ -27,6 +27,7 @@ public interface MessageMapper {
     // 新增消息
     int insertMessage(Message message);
 
-    // 修改消息的状态
+    // 修改消息的状态 status为2的时候 代表删除
     int updateStatus(List<Integer> ids, int status);
+
 }
