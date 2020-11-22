@@ -517,6 +517,64 @@ xwa******ff
 
 #### 十一：统一记录日志
 
+##### AOP的概念
+
+- Aspect Oriented Programing
+  - 面向切面编程
+- AOP是一种思想是对OOP的补充
+  - AOP可以进一步提供编程的效率
+
+![img](https://tva1.sinaimg.cn/large/0081Kckwgy1gkxuryoup6j31240u0466.jpg)
+
+##### AOP的术语
+
+![AOP术语](https://tva1.sinaimg.cn/large/0081Kckwgy1gkxv2ky9fkj31xo0u0dqo.jpg)
+
+##### AOP的实现
+
+- AspectJ
+  - AspectJ是语言级的实现，它扩展了Java语言，定义了AOP语法
+  - AspectJ在编译期织入代码，它有一个专门的编译器，用来生成遵守Java字节码规范的class文件
+- Spring AOP
+  - Spring AOP使用纯Java实现，它不需要专门的编译过程，也不需要特殊的类装载器
+  - Spring AOP在运行时通过代理的方式织入代码，只支持方法类型的连接点
+  -  Spring支持对AspectJ的集成
+
+##### 动态代理
+
+- JDK动态代理
+  - Java提供的动态代理技术，可以在运行时创建接口的代理实例
+  - Spring AOP默认采用此种方式，在接口代理实例中织入代码
+- CGLib动态代理
+  - 采用底层的字节码技术，在运行时创建子嘞代理实例
+  - 当目标对象不存在接口时，Spring AOP会采用此种方式，在子类实例中织入代码
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
