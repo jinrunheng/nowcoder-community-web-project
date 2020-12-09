@@ -118,5 +118,190 @@ Thread-1消费：0
 
 可以看到，阻塞队列从一开始，因为生产者的生产速度比较快，间隔20ms就会生产一个数据，所以，前期生产者会一直生产数据直至填满阻塞队列，当阻塞队列长度为10以后，生产者就不会再生产数据了，继而是消费者消费，生产和三个消费者线程交替进行生产和消费。到最后，生产者生产够了100个数据，就停产，由消费者将数据消费完毕。
 
+#### 2. Kafka入门
+
+- Kafka简洁
+
+  - Kafka是一个分布式的流媒体平台。
+  - 应用：消息系统，日志收集，用户行为追踪，流式处理。
+
+- Kafka特点
+
+  - 高吞吐量，消息持久化，高可靠性，高扩展性。
+
+- Kafka术语
+
+  - Broker,Zookeeper
+  - Topic,Partition,Offse t
+  - Leader Replica,Follower Replica
 
 
+kafka的启动：
+
+1. 启动zookeeper
+
+   在kafka的安装包的bin目录下运行命令：`sh zookeeper-server-start.sh ../config/zookeeper.properties` 启动zookeeper
+
+2. 运行kafka
+
+   启动zookeeper后，在kafka的安装包bin目录下运行命令：`sh kafka-server-start.sh ../config/server.properties`
+
+kafka的使用：
+
+1. kafka创建主题
+
+   进入到kafka安装包的bin目录下运行命令：`sh kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic test`
+
+2. 查看刚刚创建的主题
+
+   查看刚刚创建的test主题，使用命令：`sh kafka-topics.sh --list --bootstrap-server localhost:9092`
+
+   可以看到返回结果 test
+
+3. 调用生产者发送消息
+
+   使用命令: `sh kafka-console-producer.sh --broker-list localhost:9092 --topic test`
+
+   示例：
+
+   发送两条消息分别为“hello”，“world”
+
+4. 调用消费者接收消息
+
+   再开启一个新的terminal，执行命令：`sh kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic test --from-beginning`
+
+   其中`--from-beginning` 表示从头开始接收消息
+
+   运行这条命令后，我们可以看到终端显示了生产者生产的两条消息：
+
+   ```
+   hello
+   world
+   ```
+
+   与此同时，我们再次调用生产者发送消息，消费者也能马上接收到
+
+#### 3.  Spring整合Kafka
+
+- 引入依赖
+
+  - spring-kafka
+
+    ```xml
+    <dependency>
+        <groupId>org.springframework.kafka</groupId>
+        <artifactId>spring-kafka</artifactId>
+    </dependency>
+    ```
+
+- 配置Kafka
+
+  - 配置server, consumer
+
+    在application.properties配置文件中：
+
+    ```properties
+    # KafkaProperties
+    spring.kafka.bootstrap-servers=localhost:9092
+    spring.kafka.consumer.group-id=test-consumer-group
+    # 是否自动提交消费者的偏移量
+    spring.kafka.consumer.enable-auto-commit=true
+    # 提交的频率 单位为ms
+    spring.kafka.consumer.auto-commit-interval=3000
+    ```
+
+- 访问Kafka
+
+  - 生产者 : `kafkaTemplate.send(topic,data);`
+  - 消费者
+
+```java
+@KafkaListener(topics = {"test"})
+public void handleMessage(ConsumerRecord record){
+		// ... ... 
+}
+```
+
+示例程序
+
+```java
+package com.nowcoder.community;
+
+import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Component;
+import org.springframework.test.context.ContextConfiguration;
+
+@SpringBootTest
+@ContextConfiguration(classes = CommunityApplication.class)
+public class KafkaTest {
+
+    @Autowired
+    private KafkaProducer kafkaProducer;
+
+    @Test
+    public void testKafka() {
+        kafkaProducer.sendMessage("test","你好");
+        kafkaProducer.sendMessage("test","再见");
+
+        try {
+            Thread.sleep(1000 * 10);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
+}
+
+// 生产者
+@Component
+class KafkaProducer {
+
+    @Autowired
+    private KafkaTemplate kafkaTemplate;
+
+    public void sendMessage(String topic, String content) {
+        kafkaTemplate.send(topic, content);
+    }
+}
+
+// 消费者
+@Component
+class KafkaConsumer {
+
+    @KafkaListener(topics = {"test"})
+    public void handleMessage(ConsumerRecord record) {
+        System.out.println(record.value());
+    }
+}
+```
+
+该程序为生产者生产消息，消费者被动接收到消息。然后线程sleep10秒钟，程序结束运行
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+​	
